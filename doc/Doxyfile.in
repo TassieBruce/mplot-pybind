@@ -1,0 +1,37 @@
+# General information
+PROJECT_NAME          = @DOXYGEN_NAME@
+OUTPUT_DIRECTORY      = @DOXYGEN_OUTPUT@
+OUTPUT_LANGUAGE       = English
+TAB_SIZE              = 2
+EXTRACT_ALL           = YES
+DOXYFILE_ENCODING     = UTF-8
+TYPEDEF_HIDES_STRUCT  = YES
+PROJECT_BRIEF         = "@DOXYGEN_BRIEF@"
+PROJECT_NUMBER        = "Version @DOXYGEN_VERSION@"
+
+# Warning and progress messages
+QUIET                = YES
+WARNINGS             = YES
+WARN_IF_UNDOCUMENTED = YES
+
+# Input files
+INPUT         = @DOXYGEN_INPUT@
+USE_MDFILE_AS_MAINPAGE = @DOXYGEN_README@
+FILE_PATTERNS = *.h
+RECURSIVE     = YES
+
+# Output files
+GENERATE_HTML  = YES
+GENERATE_LATEX = NO
+GENERATE_RTF   = NO
+GENERATE_XML   = NO
+
+SOURCE_BROWSER = YES
+
+# Other options
+# See https://stackoverflow.com/questions/22990449/how-can-i-hide-a-particular-function-in-c-in-doxygen
+EXTRACT_PRIVATE = NO
+DISTRIBUTE_GROUP_DOC = YES
+
+# HTML settings
+HTML_TIMESTAMP = NO
