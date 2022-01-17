@@ -1,6 +1,7 @@
 # General information
 PROJECT_NAME          = @DOXYGEN_NAME@
 OUTPUT_DIRECTORY      = @DOXYGEN_OUTPUT@
+EXAMPLE_PATH          = @DOXYGEN_EXAMPLES@
 OUTPUT_LANGUAGE       = English
 TAB_SIZE              = 2
 EXTRACT_ALL           = YES

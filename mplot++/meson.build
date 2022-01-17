@@ -5,6 +5,7 @@ source_ext = '.cc'
 # There must be a source file and header file in current directory for
 # every item in head_and_source.
 head_and_source = [
+  'utilities'
 ]
 
 # There must be a header file in current directory for every item in
