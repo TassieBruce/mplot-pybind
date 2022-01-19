@@ -126,6 +126,12 @@ examples.
   `py::arg` object which can be assigned a value and is then recognised as a
   keyword argument.
 
+- `py::cast(x)`
+
+  Create a `py::object` from many `c++` objects.  To cast a standard library
+  container (e.g., `std::vector<double>`, which is cast to a python list) the
+  statement `#include <pybind11/stl.h>` is required
+
 - `tuple<2>(plt.attr("subplots")())`
 
   The `mplotpp::tuple<N>(pyobj)` template function converts any python sequence
@@ -135,11 +141,28 @@ examples.
   binding](https://en.cppreference.com/w/cpp/language/structured_binding) (a
   feature introduced in `c++17`)
 
-- `py::cast(x)`
+- `auto [fig, ax] = tuple<2>(plt.attr("subplots")(2, 2));`
 
-  Create a `py::object` from many `c++` objects.  To cast a standard library
-  container (e.g., `std::vector<double>`, which is cast to a python list) the
-  statement `#include <pybind11/stl.h>` is required
+  In this case, the `ax` object will appear to python as a *2x2* numpy array.
+  But to `c++` it is just a `py::object`.  The elements can be accessed using
+  repeated application of `operator[]` but only if the integer argument is first
+  cast to python, for example with
+  ```
+  ax[py::cast(0)][py::cast(1)];
+  ```
+  or perhaps more conveniently with something like
+  ```
+  py::object _0 = py::cast(0);
+  py::object _1 = py::cast(1);
+  ax[_0][_1];
+  ```
+  However, it may also be easier to use `mplotpp::tuple` and do 
+  ```
+  auto [row0, row1] = tuple<2>(ax);
+  auto [a00, a01] = tuple<2>(row0);
+  auto [a10, a11] = tuple<2>(row1);
+  ```
+  which is the approach used in `examples/subplots.cc`
 
 - `py::array_t<double> x(100);`
 

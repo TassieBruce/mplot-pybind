@@ -28,7 +28,7 @@ int main()
 
   py::module_ plt = py::module_::import("matplotlib.pyplot");
 
-  auto [fig, ax] = tuple<2>(plt.attr("subplots")("figsize"_a=pyList(5, 2.7)));
+  auto [fig, ax] = tuple<2>(plt.attr("subplots")("figsize"_a=list(5, 2.7)));
 
   ax.attr("plot")(x, x, "label"_a="linear");
   ax.attr("plot")(x, x_2, "label"_a="quadratic");

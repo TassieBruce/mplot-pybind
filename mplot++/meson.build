@@ -61,6 +61,6 @@ mplotppdep = declare_dependency(dependencies: deps,
 pkg = import('pkgconfig')
 pkg.generate(
   mplotpplib,
-  description: 'mplot++ - ' + project_brief,
+  description: 'Help for plotting from c++ using matplotlib and pybind11',
   version: meson.project_version()
 )

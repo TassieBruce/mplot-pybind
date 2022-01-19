@@ -28,7 +28,7 @@ repr(const pybind11::object& obj);
 
 /**
    @private
-   @brief Helper struct for function pyList
+   @brief Helper struct for function list
 */
 struct PyListGenerator
 {
@@ -56,7 +56,7 @@ PyListGenerator::operator+=(const T& obj)
 */
 template<typename... Args>
 pybind11::list
-pyList(Args... args)
+list(Args... args)
 {
   auto generator = (PyListGenerator() += ... += args);
   return generator.list;
