@@ -1,6 +1,9 @@
 #pragma once
 
+#include <limits>
 #include <pybind11/embed.h>
+#include <pybind11/numpy.h>
+#include <stdexcept>
 #include <string>
 
 namespace mplotpp {
@@ -103,6 +106,47 @@ tuple(const pybind11::object& obj)
                              std::to_string(N) + " but have " + str(obj)));
   }
   return tuple_impl(obj, std::make_index_sequence<N>{});
+}
+
+/**
+   @brief Return evenly spaced values within a given interval.
+
+   This mimics the behaviour of python's numpy.arange()
+
+   @tparam T The data type
+   @param start Start of interval. The interval includes this value.
+   @param stop End of interval. For integral types, the interval does not
+   include this value.  For floating point types there are some cases where it
+   may be included due to rounding errors.
+   @param step Spacing between values. For any output `out`, this is the
+   distance between two adjacent values, `out[i+1] - out[i]`. The default step
+   size is 1.
+   @return An array containing the desired range as a python numpy object.
+*/
+template<class T>
+pybind11::array_t<T>
+arange(T start, T stop, T step = 1)
+{
+  if (step == 0) {
+    throw(std::domain_error("step is zero in arange()"));
+  }
+  size_t N = 0;
+  if ((stop > start and step > 0) or (stop < start and step < 0)) {
+    if (std::numeric_limits<T>::is_integer) {
+      N = (stop - start) / step;
+    } else {
+      N =
+        size_t((stop - start) / step - 10 * std::numeric_limits<T>::epsilon()) +
+        1;
+    }
+  }
+  pybind11::array_t<T> result(N);
+  auto unchecked = result.mutable_unchecked();
+  for (size_t i = 0; i < unchecked.size(); ++i) {
+    unchecked[i] = start + i * step;
+  }
+
+  return result;
 }
 
 }

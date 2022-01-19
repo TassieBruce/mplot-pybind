@@ -2,7 +2,7 @@
 project('mplot++', 'cpp',
 	default_options : ['cpp_std=c++17', 'werror=true'],
         version: '0.2.0',
-        meson_version: '>=0.54.1')
+        meson_version: '>=0.49.0')
 
 project_brief = 'A C++ interface to python\'s matplotlib using pybind11'
 
@@ -16,4 +16,5 @@ doxygen_input = [readmefile]
 
 subdir('mplot++')
 subdir('examples')
+subdir('development')
 subdir('doc')
