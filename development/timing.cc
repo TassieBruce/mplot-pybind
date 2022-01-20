@@ -1,11 +1,20 @@
 
-#include <bcp/Timer.h>
+#include <ctime>
 #include <iostream>
 #include <pybind11/embed.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+
+/*
+  Get cpu time in seconds.
+*/
+double
+cpuTime()
+{
+  return double(clock()) / double(CLOCKS_PER_SEC);
+}
 
 /*
   This shows that for large vectors there is considerable time saving in
@@ -44,8 +53,6 @@ namespace py = pybind11;
 int
 main()
 {
-  bcp::Timer cpu(bcp::Timer::cpuClock);
-
   constexpr size_t size = 10000000;
   std::cout << "size = " << size << std::endl;
 
@@ -55,35 +62,35 @@ main()
   py::object len = builtins.attr("len");
 
   std::cout << std::endl;
-  cpu.reset();
+  double start = cpuTime();
   py::array_t<double> arr(size);
   auto unchecked = arr.mutable_unchecked();
   for (size_t i = 0; i < unchecked.size(); ++i) {
     unchecked[i] = i;
   }
-  
-  double inittime = cpu.time();
+
+  double inittime = cpuTime() - start;
   std::cout << "Time to initialise py::array_t = " << inittime << std::endl;
 
-  cpu.reset();
+  start = cpuTime();
   auto arrlen = len(arr);
-  double calltime = cpu.time();
+  double calltime = cpuTime() - start;
   std::cout << "Time to get len(arr) = " << calltime << std::endl;
   std::cout << "  init + call time = " << inittime + calltime << std::endl;
   std::cout << "arrlen = " << arrlen.cast<size_t>() << std::endl;
 
   std::cout << std::endl;
-  cpu.reset();
+  start = cpuTime();
   std::vector<double> vec(size);
   for (size_t i = 0; i < arr.size(); ++i) {
     vec[i] = i;
   }
-  inittime = cpu.time();
+  inittime = cpuTime() - start;;
   std::cout << "Time to initialise std::vector = " << inittime << std::endl;
 
-  cpu.reset();
+  start = cpuTime();
   auto veclen = len(vec);
-  calltime = cpu.time();
+  calltime = cpuTime() - start;
   std::cout << "Time to get len(vec) = " << calltime << std::endl;
   std::cout << "  init + call time = " << inittime + calltime << std::endl;
   std::cout << "veclen = " << veclen.cast<size_t>() << std::endl;

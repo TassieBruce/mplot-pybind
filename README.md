@@ -8,9 +8,11 @@ This repository illustrates how to plot graphs from c++ using
 [matplotlib](https://matplotlib.org/).  It includes some examples and a small
 c++ library that simplifies some aspects. 
 
+Hopefully the included examples illustrate that it should be possible to simply translate virtually any python `matplotlib` recipe into `c++`.
+
 ## Prerequisites
 
-On a debian-based system, the following should install everything needed to
+On a Debian-based system, the following should install everything needed to
 build and run the examples and library.
 ```
 sudo apt install pybind11-dev python3-matplotlib meson
@@ -23,9 +25,9 @@ for the Gnu compiler or
 ```
 sudo apt install clang
 ```
-for clang.  Make sure the compiler is capable of the standard `c++17`, which is
-the case for either compiler packaged with Debian 10 (buster, released in July
-2019) or later.
+for `clang++`.  Make sure the compiler is capable of the standard `c++17`, which
+started with `g++` version 8 and `clang` version 5.  This is the case for either
+compiler packaged with Debian 10 (buster, released in July 2019) or later and recent Debian-derived distributions such as Ubuntu.
 
 ## pybind11
 
@@ -40,15 +42,43 @@ itself as
 > inferring type information using compile-time introspection.
 
 In addition to it's primary goal of creating python bindings of existing `c++`
-code, `pybind11` has the ability to embed a python interpreter in a `c++`
-program, and it is this feature that we will make use of here.
+code, `pybind11` has the (less well documented) ability to do the reverse and
+embed a python interpreter in a `c++` program.  It is this feature that we will
+make use of here.
+
+The [boost python
+library](https://www.boost.org/doc/libs/1_78_0/libs/python/doc/html/index.html)
+is an alternative candidate to `pybind11`.  The deal maker for `pybind11` is its
+ability for `pybind11::object::operator()` to handle an arbitrary number of
+arguments and the use of user-defined string literals to handle python keyword
+arguments in a syntactically nice way.  Since it is virtually impossible to use
+the python `matplotlib` library without using keyword arguments, this is a very
+useful feature for our purposes.
+
+The only downside is that while `boost::python` allows implicit conversion of
+many `c++` types to python objects (I assume `namespace py = pybind11` and
+`namespace bpy = boost::python`)
+```
+bpy::object x = 3.1416;
+bpy::object i = 42;
+bpy::object s = "Hello World";
+```
+while in `pybind11` the casting needs to be explicit using `py::cast()`
+```
+auto x = py::cast(3.1416);
+auto i = py::cast(42);
+auto s = py::cast("Hello World");
+```
+where the compiler will determine the `auto` type to be `py::object`.
+
 
 ## The examples
 
 ### Compiling the examples
 
 First, obtain a copy of this repository, either via `git clone` or downloading
-and extracting the zip file and `cd` to the top level in a terminal.  If you are using the Gnu compiler, do
+and extracting the zip file.  In a terminal, change directory to the top level
+of the extracted repository.  If you are using the Gnu compiler, do
 ```
 $ meson builddir
 ```
@@ -77,7 +107,7 @@ If you find the small library of utilities useful, it can be installed to
 ```
 $ ninja -C builddir install
 ```
-The documentation is built using
+The documentation to the utility library `mplot++` is built using
 ```
 $ ninja -C builddir doc
 ```
@@ -99,11 +129,11 @@ examples.
 
 - `py::module_ plt = py::module_::import("matplotlib.pyplot");`
 
-  Equivalent to `import matplotlib.pyplot as plt` in python
+  Equivalent to '`import matplotlib.pyplot as plt`' in python
 
 - `plt.attr("subplots")()`
 
-  Equivalent to `plt.subplots()` in python.  In `pybind11` (here aliased as
+  Equivalent to '`plt.subplots()`' in python.  In `pybind11` (here aliased as
   `py`) the class `py::module_` inherits from `py::object` which holds a
   reference counted reference to a python object.  A method of `py::object` is
   `attr(const char* name)` which finds the python attribute named `name` and
@@ -213,14 +243,14 @@ examples.
   Unfortunately, 3D surface plots cannot use the 1-d arrays of just the *x* and
   *y* points but require the full *MxN* arrays of duplicated values.
 
-  ## Final notes
+## Final notes
 
 If a later version of `pybind11` than that available via the package manager is
 required, the latest `c++` header library (omitting the python-side install),
 can be installed via the following steps.  Note that the version installed above
 via the package manager is all that is required for the examples here.
 
-- Install the Python header files and static library.  On debian-based systems
+- Install the Python header files and static library.  On Debian-based systems
   this is
   ```
   $ sudo apt install libpython3-dev

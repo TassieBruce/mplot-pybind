@@ -1,6 +1,6 @@
 
   executable('timing', sources: ['timing.cc'],
-        dependencies: [mplotppdep, dependency('bcp')])
+        dependencies: [mplotppdep])
 
   executable('testarange', sources: ['testarange.cc'],
         dependencies: [mplotppdep])
