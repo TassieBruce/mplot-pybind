@@ -65,7 +65,7 @@ main()
   double start = cpuTime();
   py::array_t<double> arr(size);
   auto unchecked = arr.mutable_unchecked();
-  for (size_t i = 0; i < unchecked.size(); ++i) {
+  for (ssize_t i = 0; i < unchecked.size(); ++i) {
     unchecked[i] = i;
   }
 
@@ -82,7 +82,7 @@ main()
   std::cout << std::endl;
   start = cpuTime();
   std::vector<double> vec(size);
-  for (size_t i = 0; i < arr.size(); ++i) {
+  for (ssize_t i = 0; i < arr.size(); ++i) {
     vec[i] = i;
   }
   inittime = cpuTime() - start;;

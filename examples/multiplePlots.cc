@@ -17,7 +17,7 @@ int main()
 
   constexpr size_t size = 100;
   py::array_t<double> x(size);
-  for (size_t i = 0; i < x.size(); ++i) {
+  for (ssize_t i = 0; i < x.size(); ++i) {
     x.mutable_at(i) = 2.0 * i / double(x.size() - 1);
   }
   py::array_t<double> x_2(size), x_3(size);

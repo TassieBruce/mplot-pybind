@@ -1,5 +1,5 @@
 # mplot-pybind
-Graph plotting from C++ using pybind11 to access python matplotlib
+Graph plotting from C++ using python matplotlib via pybind11.
 
 ## Introduction
 
@@ -9,6 +9,8 @@ This repository illustrates how to plot graphs from c++ using
 c++ library that simplifies some aspects. 
 
 Hopefully the included examples illustrate that it should be possible to simply translate virtually any python `matplotlib` recipe into `c++`.
+
+
 
 ## Prerequisites
 
@@ -56,8 +58,8 @@ the python `matplotlib` library without using keyword arguments, this is a very
 useful feature for our purposes.
 
 The only downside is that while `boost::python` allows implicit conversion of
-many `c++` types to python objects (I assume `namespace py = pybind11` and
-`namespace bpy = boost::python`)
+many `c++` types to python objects (I assume `namespace py = pybind11;` and
+`namespace bpy = boost::python;`)
 ```
 bpy::object x = 3.1416;
 bpy::object i = 42;
@@ -69,7 +71,8 @@ auto x = py::cast(3.1416);
 auto i = py::cast(42);
 auto s = py::cast("Hello World");
 ```
-where the compiler will determine the `auto` type to be `py::object`.
+where the compiler should determine the `auto` type to correspond to
+`py::object`.
 
 
 ## The examples

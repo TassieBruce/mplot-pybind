@@ -29,9 +29,9 @@ main()
   auto X_unch = X.unchecked();
   auto Y_unch = Y.unchecked();
   auto Z_mut = Z.mutable_unchecked();
-  for (size_t i = 0; i < Y.size(); ++i) {
+  for (ssize_t i = 0; i < Y.size(); ++i) {
     double y = Y_unch[i];
-    for (size_t j = 0; j < X.size(); ++j) {
+    for (ssize_t j = 0; j < X.size(); ++j) {
       double x = X_unch[j];
       Z_mut(i, j) = (exp(-sqr(x) - sqr(y)) - exp(-sqr(x - 1) - sqr(y - 1))) * 2;
     }

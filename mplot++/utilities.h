@@ -35,16 +35,12 @@ struct PyListGenerator
   pybind11::list list;
 
   template<class T>
-  PyListGenerator& operator+=(const T& obj);
+  PyListGenerator& operator+=(const T& obj)
+  {
+    list.append(pybind11::cast(obj));
+    return *this;
+  }
 };
-
-template<class T>
-PyListGenerator&
-PyListGenerator::operator+=(const T& obj)
-{
-  list.append(pybind11::cast(obj));
-  return *this;
-}
 
 /**
    @brief Convert a list of c++ objects to a python list
@@ -142,7 +138,7 @@ arange(T start, T stop, T step = 1)
   }
   pybind11::array_t<T> result(N);
   auto unchecked = result.mutable_unchecked();
-  for (size_t i = 0; i < unchecked.size(); ++i) {
+  for (ssize_t i = 0; i < unchecked.size(); ++i) {
     unchecked[i] = start + i * step;
   }
 

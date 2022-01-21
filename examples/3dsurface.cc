@@ -32,9 +32,9 @@ main()
   array X({ ypts.size(), xpts.size() });
   array Y({ ypts.size(), xpts.size() });
 
-  for (size_t i = 0; i < ypts.size(); ++i) {
+  for (ssize_t i = 0; i < ypts.size(); ++i) {
     double y = ypts.at(i);
-    for (size_t j = 0; j < xpts.size(); ++j) {
+    for (ssize_t j = 0; j < xpts.size(); ++j) {
       double x = xpts.at(j);
       Z.mutable_at(i, j) = sin(sqrt(x * x + y * y));
       X.mutable_at(i, j) = x;

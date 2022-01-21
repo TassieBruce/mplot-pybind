@@ -4,6 +4,8 @@ project('mplot++', 'cpp',
         version: '1.0.0',
         meson_version: '>=0.49.0')
 
+add_project_arguments('-fvisibility=hidden', language: 'cpp')
+
 project_brief = 'A C++ interface to python\'s matplotlib using pybind11'
 
 author = 'com.gmail.tassiebruce'
