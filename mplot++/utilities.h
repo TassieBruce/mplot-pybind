@@ -3,6 +3,7 @@
 #include <limits>
 #include <pybind11/embed.h>
 #include <pybind11/numpy.h>
+#include <Eigen/Dense>
 #include <stdexcept>
 #include <string>
 
@@ -117,10 +118,10 @@ tuple(const pybind11::object& obj)
    @param step Spacing between values. For any output `out`, this is the
    distance between two adjacent values, `out[i+1] - out[i]`. The default step
    size is 1.
-   @return An array containing the desired range as a python numpy object.
+   @return An Eigen::Array containing the desired range.
 */
 template<class T>
-pybind11::array_t<T>
+Eigen::Array<T,Eigen::Dynamic,1>
 arange(T start, T stop, T step = 1)
 {
   if (step == 0) {
@@ -136,13 +137,42 @@ arange(T start, T stop, T step = 1)
         1;
     }
   }
-  pybind11::array_t<T> result(N);
-  auto unchecked = result.mutable_unchecked();
-  for (ssize_t i = 0; i < unchecked.size(); ++i) {
-    unchecked[i] = start + i * step;
+  Eigen::Array<T,Eigen::Dynamic,1> result(N);
+  for (ssize_t i = 0; i < result.size(); ++i) {
+    result(i) = start + i * step;
   }
 
   return result;
+}
+
+/**
+   @brief Get coordinate arrays from coordinate vectors.
+
+   This mimics the behaviour of python's numpy.meshgrid()
+
+   @tparam T The data type
+   @param x A 1-D array representing the x-coordinates of a grid
+   @param y A 1-D array representing the y-coordinates of a grid
+   @return  A tuple (X, Y) where X and Y are each 2-D array's of size MxN where
+   M is the length of y and N is the length of x.  Each row of X is a copy of x
+   and each column of Y is a copy of y.
+*/
+template<class T>
+std::tuple<Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic>,
+           Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic>>
+meshgrid(const Eigen::Array<T, Eigen::Dynamic, 1>& x,
+         const Eigen::Array<T, Eigen::Dynamic, 1>& y)
+{
+  Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic> X(y.size(), x.size());
+  Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic> Y(y.size(), x.size());
+  for (ssize_t i = 0; i < X.rows(); ++i) {
+    X.row(i) = x;
+  }
+  for (ssize_t j = 0; j < Y.cols(); ++j) {
+    Y.col(j) = y;
+  }
+
+  return std::make_tuple(X, Y);
 }
 
 }

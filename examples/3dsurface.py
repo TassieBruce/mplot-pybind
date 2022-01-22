@@ -14,8 +14,7 @@ delta = 0.25
 x = np.arange(-5, 5.01, delta)
 y = np.arange(-5, 5.01, delta)
 X, Y = np.meshgrid(x, y)
-R = np.sqrt(X**2 + Y**2)
-Z = np.sin(R)
+Z = np.sin(np.sqrt(X**2 + Y**2))
 
 # print(Z)
 

@@ -1,17 +1,15 @@
 
 #include <cmath>
 #include <mplot++/utilities.h>
-#include <pybind11/numpy.h>
+#include <pybind11/eigen.h>
 
-using namespace mplotpp;
+namespace mp = mplotpp;
 namespace py = pybind11;
 using namespace py::literals;
 
 int
 main()
 {
-  using array = py::array_t<double>;
-
   py::scoped_interpreter guard;
 
   // Import modules
@@ -20,27 +18,15 @@ main()
   auto LinearLocator =
     py::module_::import("matplotlib.ticker").attr("LinearLocator");
 
-  auto [fig, ax] = tuple<2>(
+  auto [fig, ax] = mp::tuple<2>(
     plt.attr("subplots")("subplot_kw"_a = py::dict("projection"_a = "3d")));
 
   // Make data.
   double delta = 0.25;
-  array xpts = arange(-5.0, 5.01, delta);
-  array ypts = arange(-5.0, 5.01, delta);
-  array Z({ ypts.size(), xpts.size() });
-  // Unlike contour plots, surface plots require meshgrid-like X and Y
-  array X({ ypts.size(), xpts.size() });
-  array Y({ ypts.size(), xpts.size() });
-
-  for (ssize_t i = 0; i < ypts.size(); ++i) {
-    double y = ypts.at(i);
-    for (ssize_t j = 0; j < xpts.size(); ++j) {
-      double x = xpts.at(j);
-      Z.mutable_at(i, j) = sin(sqrt(x * x + y * y));
-      X.mutable_at(i, j) = x;
-      Y.mutable_at(i, j) = y;
-    }
-  }
+  auto x = mp::arange(-5.0, 5.01, delta);
+  auto y = mp::arange(-5.0, 5.01, delta);
+  auto [X, Y] = mp::meshgrid(x, y);
+  auto Z = (X.pow(2) + Y.pow(2)).sqrt().sin();
 
   // Plot the surface.
   auto surf = ax.attr("plot_surface")(X,

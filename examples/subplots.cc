@@ -1,12 +1,8 @@
 
-/// @cond
 #include <mplot++/utilities.h>
-#include <pybind11/embed.h>
-#include <pybind11/numpy.h>
-#include <vector>
-/// @endcond
+#include <pybind11/eigen.h>
 
-using namespace mplotpp;
+namespace mp = mplotpp;
 namespace py = pybind11;
 using namespace py::literals;
 
@@ -15,24 +11,34 @@ main()
 {
   py::scoped_interpreter guard;
 
-  constexpr size_t size = 100;
-  py::array_t<double> x(size);
-  for (ssize_t i = 0; i < x.size(); ++i) {
-    x.mutable_at(i) = 2.0 * i / double(x.size() - 1);
-  }
-  py::array_t<double> x_2(size), x_3(size), x_4(size);
-  for (size_t i = 0; i < size; ++i) {
-    x_2.mutable_at(i) = pow(x.at(i), 2);
-    x_3.mutable_at(i) = pow(x.at(i), 3);
-    x_4.mutable_at(i) = pow(x.at(i), 4);
-  }
+  auto x = mp::arange(0.0, 2.01, 0.02);
+  auto x_2 = x.pow(2);
+  auto x_3 = x.pow(3);
+  auto x_4 = x.pow(4);
 
   py::module_ plt = py::module_::import("matplotlib.pyplot");
 
-  auto [fig, ax] = tuple<2>(plt.attr("subplots")(2, 2));
-  auto [row0, row1] = tuple<2>(ax);
-  auto [ax00, ax01] = tuple<2>(row0);
-  auto [ax10, ax11] = tuple<2>(row1);
+  /*
+    Here the `ax` object will appear to python as a *2x2* numpy array.  But to
+    `c++` it is just a `py::object`.  The elements can be accessed using
+    repeated application of `operator[]` but only if the integer argument is
+    first cast to python, for example with
+    ```
+    ax[py::cast(0)][py::cast(1)];
+    ```
+    or perhaps more conveniently with something like
+    ```
+    py::object _0 = py::cast(0);
+    py::object _1 = py::cast(1);
+    ax[_0][_1];
+    ```
+    However, I find it easier to use `mplotpp::tuple` to first extract the rows
+    and then the individual axes from the rows.
+  */
+  auto [fig, ax] = mp::tuple<2>(plt.attr("subplots")(2, 2));
+  auto [row0, row1] = mp::tuple<2>(ax);
+  auto [ax00, ax01] = mp::tuple<2>(row0);
+  auto [ax10, ax11] = mp::tuple<2>(row1);
 
   fig.attr("suptitle")("Subplots");
   ax00.attr("plot")(x, x);

@@ -38,7 +38,8 @@ cc = meson.get_compiler('cpp')
 
 # List all dependencies
 deps = [
-  dependency('python3-embed')
+  dependency('python3-embed'),
+  dependency('eigen3')
 ]
 
 mplotpplib = static_library(

@@ -1,9 +1,9 @@
 
 #include <cmath>
 #include <mplot++/utilities.h>
-#include <pybind11/numpy.h>
+#include <pybind11/eigen.h>
 
-using namespace mplotpp;
+namespace mp = mplotpp;
 namespace py = pybind11;
 using namespace py::literals;
 
@@ -17,29 +17,29 @@ sqr(T x)
 int
 main()
 {
-  using array = py::array_t<double>;
-
   py::scoped_interpreter guard;
 
   double delta = 0.025;
-  array X = arange(-3.0, 3.0001, delta);
-  array Y = arange(-2.0, 2.0001, delta);
-  array Z({ Y.size(), X.size() });
+  auto x = mp::arange(-3.0, 3.0001, delta);
+  auto y = mp::arange(-2.0, 2.0001, delta);
 
-  auto X_unch = X.unchecked();
-  auto Y_unch = Y.unchecked();
-  auto Z_mut = Z.mutable_unchecked();
-  for (ssize_t i = 0; i < Y.size(); ++i) {
-    double y = Y_unch[i];
-    for (ssize_t j = 0; j < X.size(); ++j) {
-      double x = X_unch[j];
-      Z_mut(i, j) = (exp(-sqr(x) - sqr(y)) - exp(-sqr(x - 1) - sqr(y - 1))) * 2;
-    }
-  }
+  /*
+    mplotpp::meshgrid() behaves a lot like numpy.meshgrid.  Here X will be
+    sized as if declared by 
+    ```
+    Eigen::ArrayXXd X(y.size(), x.size());
+    ```
+    and similarly for Y.  Each row of X is a copy of x and each column of Y is
+    a copy of y.
+  */
+  auto [X, Y] = mp::meshgrid(x, y);
+  auto Z1 = (-X.pow(2) - Y.pow(2)).exp();
+  auto Z2 = (-(X - 1).pow(2) - (Y - 1).pow(2)).exp();
+  auto Z = (Z1 - Z2) * 2;
 
   py::module_ plt = py::module_::import("matplotlib.pyplot");
 
-  auto [fig, ax] = tuple<2>(plt.attr("subplots")());
+  auto [fig, ax] = mp::tuple<2>(plt.attr("subplots")());
   auto CS = ax.attr("contourf")(X, Y, Z);
   auto cbar = fig.attr("colorbar")(CS);
   cbar.attr("ax").attr("set_ylabel")("Height");
