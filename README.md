@@ -5,8 +5,8 @@ Graph plotting from `C++` using python's `matplotlib` via `pybind11`.
 
 This repository contains what I have learnt about how to plot graphs from c++
 using [pybind11](https://github.com/pybind/pybind11) to access python's
-[`matplotlib`](https://matplotlib.org/).  It includes some examples and a small
-`c++` library of things I've found useful. 
+[`matplotlib`](https://matplotlib.org/).  It includes some examples and a small,
+header-only, `c++` library of things I've found useful. 
 
 Hopefully the included examples illustrate that it should be possible to simply
 translate virtually any python `matplotlib` recipe into `c++`.
@@ -30,12 +30,18 @@ enough that virtually any `matplotlib` construct can be accessed from `c++`
 using syntax that is nearly as nice as dedicated `c++` classes.
 
 The main content of this repository are the examples, in both python and `c++`,
-contained in the directory `examples/`.  These make some use of the library of
-useful things found in `mplot++/`.  Perhaps the most useful things there are a
-means of casting a `pybind11::list` or `pybind11::tuple` to a `c++` `std::tuple`
-and of generating a `pybind11::list` from an arbitrary collection of `c++`
-objects (strangely `pybind11` has such a means of creating a `dict` this way but
-not a list).
+contained in the directory `examples/`.  These make some use of a header-only
+library of useful things found in `mplot++/mplot++.h`.  The contents include
+
+- mplotpp::tuple  Convert a python sequence to a `c++` tuple.
+
+- mplotpp::list  Convert an arbitrary number of `c++` objects to a
+  `pybind11::list`
+
+- mplotpp::arange  Like python's numpy.arange to construct an `Eigen::Array`.
+
+- mplotpp::meshgrid  Like python's numpy.meshgrid to construct coordinate arrays
+  as `Eigen::Array` objects.
 
 The `meson` build system is used to compile all examples and compile and install (if desired) the utilities library.
 
@@ -116,17 +122,6 @@ $ pkg-config --libs python3-embed
 
 ### Compiling the examples
 
-Note that the examples have only been tested with the following versions
-- `clang++`: 11.0.1
-- `g++`: 10.2.1
-- `pybind11`: 2.6.2
-- `Eigen`: 3.3.9
-- `python`: 3.9.2
-
-Note that `pybind11` [contains a
-warning](https://pybind11.readthedocs.io/en/stable/limitations.html#python-3-9-0-warning)
-not to use versions earlier than 2.6.0 with `python` 3.9.0.
-
 First, obtain a copy of this repository, either via `git clone` or downloading
 and extracting the zip file.  In a terminal, change directory to the top level
 of the extracted repository.  If you are using the Gnu compiler, do
@@ -153,11 +148,24 @@ and for the `c++` version
 $ ./builddir/examples/subplots
 ```
 
-If you find the small library of utilities useful, it can be installed to
-`/usr/local` using
+### Installing the header library
+
+If you find the small library of utilities useful, it can be installed using
+(sudo is not needed if you have write access to `/usr/local`.  Installation will
+only write to `/usr/local`)
 ```
-$ ninja -C builddir install
+$ ninja -C builddir
+$ sudo ninja -C builddir install
 ```
+This will copy the header and a config file for `pkg-config` to `/usr/local`.  Once installed, 
+```
+$ pkg-config --cflags mplot++
+$ pkg-config --libs mplot++
+```
+will provide the options needed to compile and link code that uses the library.
+The `--libs` option will include linking with the [embedded Python/C
+API](https://docs.python.org/3/c-api/index.html)
+
 The documentation to the utility library `mplot++` is built using
 ```
 $ ninja -C builddir doc
@@ -168,6 +176,17 @@ $ firefox ./builddir/doc/html/index.html
 ```
 
 ## Final notes
+
+The examples have only been tested with the following versions on a Debian 11 (Bullseye) system.
+- `clang++`: 11.0.1
+- `g++`: 10.2.1
+- `pybind11`: 2.6.2
+- `Eigen`: 3.3.9
+- `python`: 3.9.2
+
+Note that `pybind11` [contains a
+warning](https://pybind11.readthedocs.io/en/stable/limitations.html#python-3-9-0-warning)
+not to use versions earlier than 2.6.0 with `python` 3.9.0.
 
 If a later version of `pybind11` than that available via the package manager is
 required, the latest `c++` header library (omitting the python-side install),

@@ -1,5 +1,5 @@
 
-#include <mplot++/utilities.h>
+#include <mplot++/mplot++.h>
 #include <pybind11/stl.h> // Needed to cast from std::vector to python list
 #include <vector>
 

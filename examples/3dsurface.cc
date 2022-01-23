@@ -1,6 +1,6 @@
 
 #include <cmath>
-#include <mplot++/utilities.h>
+#include <mplot++/mplot++.h>
 #include <pybind11/eigen.h>
 
 namespace mp = mplotpp;

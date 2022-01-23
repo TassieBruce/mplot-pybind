@@ -10,24 +10,6 @@
 namespace mplotpp {
 
 /**
-   @brief Get the str representation of a python object
-
-   @param obj The python object
-   @return  The result of `str(obj)` in python
-*/
-std::string
-str(const pybind11::object& obj);
-
-/**
-   @brief Get the repr representation of a python object
-
-   @param obj The python object
-   @return  The result of `repr(obj)` in python
-*/
-std::string
-repr(const pybind11::object& obj);
-
-/**
    @private
    @brief Helper struct for function list
 */
@@ -100,7 +82,8 @@ tuple(const pybind11::object& obj)
 {
   if (not(pybind11::hasattr(obj, "__getitem__") and pybind11::len(obj) == N)) {
     throw(std::runtime_error("Expected python sequence of length " +
-                             std::to_string(N) + " but have " + str(obj)));
+                             std::to_string(N) + " but have " + 
+                             pybind11::str(obj).cast<std::string>()));
   }
   return tuple_impl(obj, std::make_index_sequence<N>{});
 }

@@ -1,7 +1,7 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#include <mplot++/utilities.h>
+#include <mplot++/mplot++.h>
 #include <tuple>
 
 namespace ei = Eigen;

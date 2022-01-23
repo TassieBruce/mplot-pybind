@@ -1,5 +1,5 @@
 
-#include <mplot++/utilities.h>
+#include <mplot++/mplot++.h>
 #include <pybind11/eigen.h>
 #include <iostream>
 
