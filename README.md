@@ -31,7 +31,8 @@ using syntax that is nearly as nice as dedicated `c++` classes.
 
 The main content of this repository are the examples, in both python and `c++`,
 contained in the directory `examples/`.  These make some use of a header-only
-library of useful things found in `mplot++/mplot++.h`.  The contents include
+library of useful things found in `mplot++/mplot++.h`.  The contents of this
+library include
 
 - mplotpp::tuple  Convert a python sequence to a `c++` tuple.
 
@@ -43,14 +44,15 @@ library of useful things found in `mplot++/mplot++.h`.  The contents include
 - mplotpp::meshgrid  Like python's numpy.meshgrid to construct coordinate arrays
   as `Eigen::Array` objects.
 
-The `meson` build system is used to compile all examples and compile and install (if desired) the utilities library.
+The `meson` build system is used to compile all examples and install the
+utilities library if desired.
 
 ## Prerequisites
 
 On a Debian-based system, the following should install everything needed to
 build and run the examples and library.
 ```
-sudo apt install pybind11-dev python3-matplotlib meson libeigen3-dev
+sudo apt install pybind11-dev python3-matplotlib meson libeigen3-dev pkg-config
 ```
 Of course you also need a `c++` compiler.  You can choose
 ```
@@ -66,14 +68,14 @@ compiler packaged with Debian 10 (buster, released in July 2019) or later and re
 
 ## pybind11
 
-The `pybind11`
-[documentation](https://pybind11.readthedocs.io/en/stable/index.html) descibes
+The [`pybind11`
+documentation](https://pybind11.readthedocs.io/en/stable/index.html) describes
 itself as
 
 > pybind11 is a lightweight header-only library that exposes C++ types in Python
 > and vice versa, mainly to create Python bindings of existing C++ code. Its
 > goals and syntax are similar to the excellent Boost.Python library by David
-> Abrahams: to minimize boilerplate code in traditional extension modules by
+> Abrahams: to minimise boilerplate code in traditional extension modules by
 > inferring type information using compile-time introspection.
 
 In addition to it's primary goal of creating python bindings of existing `c++`
@@ -90,7 +92,7 @@ arguments in a syntactically nice way.  Since it is virtually impossible to use
 the python `matplotlib` library without using keyword arguments, this is a very
 useful feature for our purposes.
 
-The only downside is that while `boost::python` allows implicit conversion of
+Note that while `boost::python` allows implicit conversion of
 many `c++` types to python objects (I assume `namespace py = pybind11;` and
 `namespace bpy = boost::python;`)
 ```
@@ -112,10 +114,13 @@ where the compiler should determine the `auto` type to correspond to
 
 The directory `examples/` of this repository contains sample plots created both
 in python and `c++`.  The examples should be read in the order they appear in
-`examples/meson.build`.  Features are commented in the source files when they
+`examples/meson.build` since features are commented in the source files when they
 first appear in this order.
 
-The examples need to be compiled with the compiler option `-fvisibility=hidden` [as discussed in the `pybind11` documentation](https://pybind11.readthedocs.io/en/stable/faq.html#someclass-declared-with-greater-visibility-than-the-type-of-its-field-someclass-member-wattributes) and need to be linked with the python library using the output of 
+The examples need to be compiled with the compiler option `-fvisibility=hidden`
+[as discussed in the `pybind11`
+documentation](https://pybind11.readthedocs.io/en/stable/faq.html#someclass-declared-with-greater-visibility-than-the-type-of-its-field-someclass-member-wattributes)
+and need to be linked with the python library using the output of 
 ```
 $ pkg-config --libs python3-embed
 ```
@@ -151,20 +156,22 @@ $ ./builddir/examples/subplots
 ### Installing the header library
 
 If you find the small library of utilities useful, it can be installed using
-(sudo is not needed if you have write access to `/usr/local`.  Installation will
-only write to `/usr/local`)
 ```
 $ ninja -C builddir
 $ sudo ninja -C builddir install
 ```
-This will copy the header and a config file for `pkg-config` to `/usr/local`.  Once installed, 
+where sudo is not needed if you have write access to `/usr/local`.  Installation
+will simply copy the header and a `pkg-config` configuration file to appropriate
+places under `/usr/local`.
+
+  Once installed, 
 ```
 $ pkg-config --cflags mplot++
 $ pkg-config --libs mplot++
 ```
 will provide the options needed to compile and link code that uses the library.
 The `--libs` option will include linking with the [embedded Python/C
-API](https://docs.python.org/3/c-api/index.html)
+API](https://docs.python.org/3/c-api/index.html).
 
 The documentation to the utility library `mplot++` is built using
 ```
@@ -190,8 +197,7 @@ not to use versions earlier than 2.6.0 with `python` 3.9.0.
 
 If a later version of `pybind11` than that available via the package manager is
 required, the latest `c++` header library (omitting the python-side install),
-can be installed via the following steps.  Note that the version installed above
-via the package manager is all that is required for the examples here.
+can be installed via the following steps.
 
 - Install the Python header files and static library.  On Debian-based systems
   this is

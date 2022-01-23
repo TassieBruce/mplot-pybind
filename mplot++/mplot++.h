@@ -1,3 +1,6 @@
+// Copyright (c) by TassieBruce
+// Distributed under the MIT License
+
 #pragma once
 
 #include <limits>
@@ -65,8 +68,8 @@ tuple_impl(const pybind11::object& obj, std::index_sequence<Is...>)
    ```
    auto [a, b] = tuple<2>(v);
    ```
-   where `a` and `b` are each `pybind11::object` instances.  If `v` does
-   not wrap a sequence of length 2, the above will throw `mplotpp::Error`
+   where `a` and `b` are each `pybind11::object` instances.  If `v` does not
+   wrap a sequence of length 2, the above will throw `std::runtime_error`
 
    @tparam N The size of the tuple to extract, which must be known at compile
    time.
@@ -74,7 +77,8 @@ tuple_impl(const pybind11::object& obj, std::index_sequence<Is...>)
    length `N`, where by sequence we mean any python object that defines the
    `__getitem__` attribute.
    @return A `std::tuple` containing `N` `pybind11::object` objects
-   @throw Error if obj does not wrap a python sequence of length `N`.
+   @throw std::runtime_error if obj does not wrap a python sequence of length
+   `N`.
 */
 template<size_t N>
 auto
@@ -96,12 +100,14 @@ tuple(const pybind11::object& obj)
    @tparam T The data type
    @param start Start of interval. The interval includes this value.
    @param stop End of interval. For integral types, the interval does not
-   include this value.  For floating point types there are some cases where it
-   may be included due to rounding errors.
+   include this value.  For floating point types, the interval should not
+   normally include this value but there may be some cases where it is included
+   due to rounding errors.
    @param step Spacing between values. For any output `out`, this is the
    distance between two adjacent values, `out[i+1] - out[i]`. The default step
    size is 1.
    @return An Eigen::Array containing the desired range.
+   @throw std::domain_error if step is zero.
 */
 template<class T>
 Eigen::Array<T,Eigen::Dynamic,1>
@@ -121,8 +127,10 @@ arange(T start, T stop, T step = 1)
     }
   }
   Eigen::Array<T,Eigen::Dynamic,1> result(N);
+  T x = start;
   for (ssize_t i = 0; i < result.size(); ++i) {
-    result(i) = start + i * step;
+    result.coeffRef(i) = x;
+    x += step;
   }
 
   return result;
@@ -131,7 +139,12 @@ arange(T start, T stop, T step = 1)
 /**
    @brief Get coordinate arrays from coordinate vectors.
 
-   This mimics the behaviour of python's numpy.meshgrid()
+   This mimics the behaviour of python's numpy.meshgrid().  Example usage is
+   ```
+   auto x = mplotpp::arange(-2.0, 2.01, 0.1);
+   auto y = mplotpp::arange(-3.0, 3.01, 0.1);
+   auto [X, Y] = mplotpp::meshgrid(x, y);
+   ```
 
    @tparam T The data type
    @param x A 1-D array representing the x-coordinates of a grid
