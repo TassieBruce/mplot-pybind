@@ -8,8 +8,11 @@ using [pybind11](https://github.com/pybind/pybind11) to access python's
 [`matplotlib`](https://matplotlib.org/).  It includes some examples and a small,
 header-only, `c++` library of things I've found useful. 
 
-Hopefully the included examples illustrate that it should be possible to simply
-translate virtually any python `matplotlib` recipe into `c++`.
+The included examples illustrate that it should be possible to simply translate
+virtually any python `matplotlib` recipe into `c++`.  The best experience is
+obtained if the data to be plotted is held in [Eigen
+arrays](https://eigen.tuxfamily.org/) since they are well supported by
+`pybind11`.
 
 My first attempt to plot from `c++` led me to
 [matplotlib-cpp](https://github.com/lava/matplotlib-cpp) and [a fork also named
@@ -28,6 +31,12 @@ effort to expand `matplotlib-cpp` to cover all `matplotlib` features.
 Then I discovered [pybind11](https://github.com/pybind/pybind11).  It is general
 enough that virtually any `matplotlib` construct can be accessed from `c++`
 using syntax that is nearly as nice as dedicated `c++` classes.
+
+After constructing the examples here I came across [another `github`
+repository](https://github.com/tttapa/Pybind11-Matplotlib-Cpp) that also
+discusses using `pybind11` and `matplotlib`.  The examples I provide cover a
+more complete illustration of how easy it is to translate any python
+`matplotlib` example to `c++`.
 
 The main content of this repository are the examples, in both python and `c++`,
 contained in the directory `examples/`.  These make some use of a header-only
@@ -111,6 +120,12 @@ where the compiler should determine the `auto` type to correspond to
 
 
 ## The examples
+
+![simple](plots/simple.png)
+![multiple](plots/multiple.png)
+![subplots](plots/subplots.png)
+![contour](plots/contour.png)
+![3dsurface](plots/3dsurface.png)
 
 The directory `examples/` of this repository contains sample plots created both
 in python and `c++`.  The examples should be read in the order they appear in

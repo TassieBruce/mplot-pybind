@@ -8,6 +8,7 @@ from matplotlib.ticker import LinearLocator
 import numpy as np
 
 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+fig.suptitle("3dsurface")
 
 # Make data.
 delta = 0.25

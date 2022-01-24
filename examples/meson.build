@@ -3,7 +3,7 @@ source_ext = '.cc'
 
 examples = [
   'simple',
-  'multiplePlots',
+  'multiple',
   'subplots',
   'contour',
   '3dsurface'

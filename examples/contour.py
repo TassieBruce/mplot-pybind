@@ -12,11 +12,11 @@ Z2 = np.exp(-(X - 1)**2 - (Y - 1)**2)
 Z = (Z1 - Z2) * 2
 
 fig, ax = plt.subplots()
+fig.suptitle("contour")
 CS = ax.contourf(X, Y, Z)
 cbar = fig.colorbar(CS)
 cbar.ax.set_ylabel("Height")
 ax.set_xlabel("$x$")
 ax.set_ylabel("$y$")
-ax.set_title("Shaded contours")
 
 plt.show()

@@ -13,6 +13,7 @@ if get_option('enable-docs') and doxygen.found()
   conf_data.set('DOXYGEN_VERSION', meson.project_version())
   conf_data.set('DOXYGEN_BRIEF', project_brief)
   conf_data.set('DOXYGEN_EXAMPLES', meson.source_root() / 'examples')
+  conf_data.set('DOXYGEN_IMAGES', meson.source_root())
 
   doxyfile = configure_file(
     input: 'Doxyfile.in',

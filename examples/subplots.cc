@@ -40,7 +40,7 @@ main()
   auto [ax00, ax01] = mp::tuple<2>(row0);
   auto [ax10, ax11] = mp::tuple<2>(row1);
 
-  fig.attr("suptitle")("Subplots");
+  fig.attr("suptitle")("subplots");
   ax00.attr("plot")(x, x);
   ax00.attr("text")(0.05,
                     0.95,

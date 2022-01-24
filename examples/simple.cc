@@ -13,8 +13,8 @@ main()
     Create some data to plot.  We'll see later that it's often better to use
     Eigen::VectorXd than std::vector<double>
   */
-  std::vector<double> x{0, 1, 2, 3};
-  std::vector<double> y{0, 1, 4, 9};
+  std::vector<double> x{ 0, 1, 2, 3 };
+  std::vector<double> y{ 0, 1, 4, 9 };
 
   /*
     Initialise the embedded python interpreter.  It will be finalised
@@ -36,7 +36,7 @@ main()
     `py::object` also has an `operator()` method that accepts an arbitrary
     number of arguments of any type.  Each argument is cast to python (using the
     function `py::cast()`) and the resulting argument list passed to the python
-    object's `__call__` method.  
+    object's `__call__` method.
 
     The `mplotpp::tuple<N>(pyobj)` template function converts any python
     sequence object to a `std::tuple`.  A runtime error will be thrown if
@@ -48,11 +48,16 @@ main()
   auto [fig, ax] = mp::tuple<2>(plt.attr("subplots")());
 
   /*
-    Call method `plot` of python object `ax` with three arguments.
-    `py::cast(x)`  Create a `py::object` from a `c++` object.  To cast a
-    standard library container (e.g., `std::vector<double>`, which is cast to a
-    python list) the statement `#include <pybind11/stl.h>` is required.  The
-    data in `x` will be copied.
+    Call method `suptitle` of python object `fig` with one argument `"simple"`.
+    The c-string "simple" will be cast to a python object using py::cast().
+  */
+  fig.attr("suptitle")("simple");
+
+  /*
+    Call method `plot` of python object `ax` with three arguments.  The function
+    call `py::cast(x)`  will create a python list from the `std::vector<double>`
+    object.  Casting standard template library containers like this requires
+    `#include <pybind11/stl.h>`.  The data in `x` will be copied.
   */
   ax.attr("plot")(py::cast(x), py::cast(y), "r");
   plt.attr("show")();

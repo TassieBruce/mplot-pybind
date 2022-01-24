@@ -40,12 +40,12 @@ main()
   py::module_ plt = py::module_::import("matplotlib.pyplot");
 
   auto [fig, ax] = mp::tuple<2>(plt.attr("subplots")());
+  fig.attr("suptitle")("contour");
   auto CS = ax.attr("contourf")(X, Y, Z);
   auto cbar = fig.attr("colorbar")(CS);
   cbar.attr("ax").attr("set_ylabel")("Height");
   ax.attr("set_xlabel")("$x$");
   ax.attr("set_ylabel")("$y$");
-  ax.attr("set_title")("Shaded contours");
 
   plt.attr("show")();
 }

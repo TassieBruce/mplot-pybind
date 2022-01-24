@@ -39,7 +39,8 @@ main()
     mplotpp::list to create a python list.
   */
   auto [fig, ax] =
-    mp::tuple<2>(plt.attr("subplots")("figsize"_a = mp::list(5, 2.7)));
+    mp::tuple<2>(plt.attr("subplots")("figsize"_a = mp::list(6.4, 4.8)));
+  fig.attr("suptitle")("multiple");
 
   /*
     Another example of a keyword argument.  Note that the data from the Eigen
@@ -50,7 +51,6 @@ main()
   ax.attr("plot")(x, x_3, "label"_a = "cubic");
   ax.attr("set_xlabel")("x label");
   ax.attr("set_ylabel")("y label");
-  ax.attr("set_title")("Multiple curves");
   ax.attr("legend")();
   plt.attr("show")();
 }

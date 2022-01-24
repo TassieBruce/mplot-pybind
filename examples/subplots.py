@@ -13,7 +13,7 @@ row0, row1 = ax
 ax00, ax01 = row0
 ax10, ax11 = row1
 
-fig.suptitle("Subplots")
+fig.suptitle("subplots")
 ax00.plot(x, x)
 ax00.text(0.05, 0.95, '$x$', ha='left', va='top', transform=ax00.transAxes)
 ax01.plot(x, x_2)

@@ -20,6 +20,7 @@ main()
 
   auto [fig, ax] = mp::tuple<2>(
     plt.attr("subplots")("subplot_kw"_a = py::dict("projection"_a = "3d")));
+  fig.attr("suptitle")("3dsurface");
 
   // Make data.
   double delta = 0.25;
