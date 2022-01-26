@@ -29,5 +29,6 @@ pkg.generate(
   name: 'mplot++',
   requires: deps,
   description: 'Help for plotting from c++ using matplotlib and pybind11',
+  extra_cflags: ['-fvisibility=hidden'],
   version: meson.project_version()
 )

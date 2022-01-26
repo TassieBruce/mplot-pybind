@@ -3,8 +3,8 @@ Graph plotting from `C++` using python's `matplotlib` via `pybind11`.
 
 ## Introduction
 
-This repository contains what I have learnt about how to plot graphs from c++
-using [pybind11](https://github.com/pybind/pybind11) to access python's
+This repository describes my experience with plotting graphs from c++ using
+[pybind11](https://github.com/pybind/pybind11) to access python's
 [`matplotlib`](https://matplotlib.org/).  It includes some examples and a small,
 header-only, `c++` library of things I've found useful. 
 
@@ -18,9 +18,10 @@ python.
 ![contour](plots/contour.png)
 ![3dsurface](plots/3dsurface.png)
 
-The included examples illustrate that it should be possible to simply translate
-virtually any python `matplotlib` recipe into `c++`.  The best experience is
-obtained if the data to be plotted is held in [Eigen
+These examples illustrate that it should be possible to simply translate
+virtually any python `matplotlib` recipe into `c++`.  
+
+The best experience is obtained if the data to be plotted is held in [Eigen
 arrays](https://eigen.tuxfamily.org/) since they are well supported by
 `pybind11`.
 
@@ -44,9 +45,10 @@ using syntax that is nearly as nice as dedicated `c++` classes.
 
 After constructing the examples here I came across [another `github`
 repository](https://github.com/tttapa/Pybind11-Matplotlib-Cpp) that also
-discusses using `pybind11` and `matplotlib`.  The examples I provide cover a
-more complete illustration of how easy it is to translate any python
-`matplotlib` example to `c++`.
+discusses using `pybind11` and `matplotlib`.  However, that fails to comprehend
+the true power of the `pybind11` + `matplotlib` combination.  The examples I
+provide cover a more complete illustration of how easy it is to translate any
+python `matplotlib` example to `c++`.
 
 The main content of this repository are the examples, in both python and `c++`,
 contained in the directory `examples/`.  These make some use of a header-only
@@ -71,15 +73,15 @@ utilities library if desired.
 On a Debian-based system, the following should install everything needed to
 build and run the examples and library.
 ```
-sudo apt install pybind11-dev python3-matplotlib meson libeigen3-dev pkg-config
+$ sudo apt install python3-dev pybind11-dev python3-matplotlib meson libeigen3-dev pkg-config
 ```
 Of course you also need a `c++` compiler.  You can choose
 ```
-sudo apt install g++
+$ sudo apt install g++
 ```
 for the Gnu compiler or 
 ```
-sudo apt install clang
+$ sudo apt install clang
 ```
 for `clang++`.  Make sure the compiler is capable of the standard `c++17`, which
 started with `g++` version 8 and `clang` version 5.  This is the case for either
@@ -106,14 +108,15 @@ The [boost python
 library](https://www.boost.org/doc/libs/1_78_0/libs/python/doc/html/index.html)
 is an alternative candidate to `pybind11`.  The deal maker for `pybind11` is its
 ability for `pybind11::object::operator()` to handle an arbitrary number of
-arguments and the use of user-defined string literals to handle python keyword
-arguments in a syntactically nice way.  Since it is virtually impossible to use
-the python `matplotlib` library without using keyword arguments, this is a very
-useful feature for our purposes.
+arguments and the use of [user-defined string
+literals](https://en.cppreference.com/w/cpp/language/user_literal) to handle
+python keyword arguments in a syntactically nice way.  Since it is virtually
+impossible to use the python `matplotlib` library without using keyword
+arguments, this is a very useful feature for our purposes.
 
-Note that while `boost::python` allows implicit conversion of
+A notable difference is that `boost::python` allows implicit conversion of
 many `c++` types to python objects (I assume `namespace py = pybind11;` and
-`namespace bpy = boost::python;`)
+`namespace bpy = boost::python;`), for example
 ```
 bpy::object x = 3.1416;
 bpy::object i = 42;
@@ -128,26 +131,60 @@ auto s = py::cast("Hello World");
 where the compiler should determine the `auto` type to correspond to
 `py::object`.
 
+In `pybind11`, (aliased as `py`) the class `py::object` represents any python
+object.  The method `py::object::attr(const char* name)` attempts to find an
+attribute with a given name.  It will throw an error if the attribute does not
+exist.
+
+The method `py::object::operator()(...)` attempts to call the object (via its
+python `__call__` attribute) with an arbitrary number of arguments, each of
+which can be any `c++` object that can be converted to a `py::object` via
+`py::cast()`.  
+
+The `operator()(...)` method also allows keyword arguments to be passed using
+[user-defined string
+literals](https://en.cppreference.com/w/cpp/language/user_literal).  This allows
+the construct `"something"_a=value`, where the suffix '_a' applied to a string
+literal creates an object `py::arg` which can be assigned a value that will be
+cast using `py::cast()`.  The `operator()(...)` method is then able to interpret
+the `py::arg` as a keyword argument.
+
+These features provide most of the power of `pybind11` that we will leverage.
 
 ## The examples
 
-The directory `examples/` of this repository contains sample plots created both
-in python and `c++`.  The examples should be read in the order they appear in
-`examples/meson.build` since features are commented in the source files when they
-first appear in this order.
+Obtain a copy of this repository, either via `git clone` or downloading and
+extracting the zip file.
+
+The directory `examples/` contains sample plots created both in python and
+`c++`.  The examples should be read in the order they appear in
+`examples/meson.build` since features are commented in the source files when
+they first appear in this order.
+
+### Compiling manually
 
 The examples need to be compiled with the compiler option `-fvisibility=hidden`
 [as discussed in the `pybind11`
 documentation](https://pybind11.readthedocs.io/en/stable/faq.html#someclass-declared-with-greater-visibility-than-the-type-of-its-field-someclass-member-wattributes)
-and need to be linked with the python library using the output of 
+and need to be compiled and linked with the output of 
 ```
-$ pkg-config --libs python3-embed
+$ pkg-config --cflags --libs python3-embed eigen3
 ```
 
-### Compiling the examples
+For example, when invoked from the `example/` directory, the following should
+compile `contour.cc` (substitute `g++` with `clang++` if desired):
+```
+$ g++ -std=c++17 -fvisibility=hidden -I.. contour.cc -o contour `pkg-config --cflags --libs python3-embed eigen3`
+```
+which on my system expands to
+```
+$ g++ -std=c++17 -fvisibility=hidden -I.. contour.cc -o contour -I/usr/include/python3.9 -I/usr/include/eigen3 -lpython3.9
+```
 
-First, obtain a copy of this repository, either via `git clone` or downloading
-and extracting the zip file.  In a terminal, change directory to the top level
+See below for how this is simplified by installing the header library `mplot++`
+
+### Compiling using the meson build system
+In a terminal, change directory to the top level
 of the extracted repository.  If you are using the Gnu compiler, do
 ```
 $ meson builddir
@@ -159,38 +196,41 @@ with
 ```
 $ CC=clang CXX=clang++ meson builddir
 ```
-Build the library of useful utilities and examples with
+Build the examples with
 ```
 $ ninja -C builddir
 ```
-To run a python example, for example
+The python version of an example is run, for example, by
 ```
 $ python3 ./examples/subplots.py
 ```
-and for the `c++` version
+while for the `c++` version
 ```
 $ ./builddir/examples/subplots
 ```
 
-### Installing the header library
+### Installing the header library mplot++
 
 If you find the small library of utilities useful, it can be installed using
 ```
 $ ninja -C builddir
 $ sudo ninja -C builddir install
 ```
-where sudo is not needed if you have write access to `/usr/local`.  Installation
+where `sudo` is not needed if you have write access to `/usr/local`.  Installation
 will simply copy the header and a `pkg-config` configuration file to appropriate
 places under `/usr/local`.
 
   Once installed, 
 ```
-$ pkg-config --cflags mplot++
-$ pkg-config --libs mplot++
+$ pkg-config --cflags --libs mplot++
 ```
-will provide the options needed to compile and link code that uses the library.
-The `--libs` option will include linking with the [embedded Python/C
-API](https://docs.python.org/3/c-api/index.html).
+will provide the include and link options needed to compile and link code that
+uses the library, including the dependencies `python3-embed` and `eigen3`.  For
+example, the following should now compile `contour.cc` (when invoked from the
+`example/` directory; substitute `g++` with `clang++` if desired):
+```
+$ g++ -std=c++17 contour.cc -o contour `pkg-config --cflags --libs mplot++`
+```
 
 The documentation to the utility library `mplot++` is built using
 ```
@@ -216,7 +256,11 @@ not to use versions earlier than 2.6.0 with `python` 3.9.0.
 
 If a later version of `pybind11` than that available via the package manager is
 required, the latest `c++` header library (omitting the python-side install),
-can be installed via the following steps.
+can be installed via the following steps.  Only do this if your only requirement
+is to use the embedded python interpreter from `c++`.  If you also need to use
+`pybind11` to call `c++` code from python, then follow [installation
+instructions](https://pybind11.readthedocs.io/en/latest/installing.html) for
+pybind11.
 
 - Install the Python header files and static library.  On Debian-based systems
   this is
