@@ -2,7 +2,7 @@
 project('mplot++', 'cpp',
 	default_options : ['cpp_std=c++17', 'werror=true'],
         version: '1.0.0',
-        meson_version: '>=0.49.0')
+        meson_version: '>=0.56.0')
 
 add_project_arguments('-fvisibility=hidden', language: 'cpp')
 
